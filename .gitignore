@@ -1,52 +1,70 @@
-# Prerequisites
-*.d
+#include <stdio.h>
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+// Função para trocar dois elementos do vetor
+void trocar(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
-# Linker output
-*.ilk
-*.map
-*.exp
+// Função para ajustar um heap máximo
+void ajustarHeap(int arr[], int n, int i) {
+    int maior = i;         // Inicializa o maior como raiz
+    int esquerda = 2 * i + 1;   // Índice do filho esquerdo
+    int direita = 2 * i + 2;    // Índice do filho direito
 
-# Precompiled Headers
-*.gch
-*.pch
+    // Se o filho esquerdo é maior que a raiz
+    if (esquerda < n && arr[esquerda] > arr[maior])
+        maior = esquerda;
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+    // Se o filho direito é maior que a raiz
+    if (direita < n && arr[direita] > arr[maior])
+        maior = direita; 
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+    // Se o maior não é a raiz
+    if (maior != i) {
+        trocar(&arr[i], &arr[maior]);
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+        // Ajusta o sub-heap afetado
+        ajustarHeap(arr, n, maior);
+    }
+}
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+// Função principal que implementa o HeapSort
+void heapSort(int arr[], int n) {
+    // Constrói o heap (rearranja o array)
+    for (int i = n / 2; i >= 0; i--)
+        ajustarHeap(arr, n, i);
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+    // Extrai os elementos um por um do heap
+    for (int i = n - 1; i > 0; i--) {
+        // Move a raiz atual para o final
+        trocar(&arr[0], &arr[i]);
+
+        // Chama a função para ajustar o heap reduzido
+        ajustarHeap(arr, i, 0);
+    }
+}
+
+// Função para imprimir o array
+void imprimirArray(int arr[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+
+// Função principal
+int main() {
+    int arr[] = {12, 11, 13, 5, 6, 7};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    printf("Array original:\n");
+    imprimirArray(arr, n);
+
+    heapSort(arr, n);
+
+    printf("Array ordenado pelo HeapSort:\n");
+    imprimirArray(arr, n);
+
+    return 0;
+}
